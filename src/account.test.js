@@ -24,4 +24,18 @@ describe("Account", () => {
         expect(account.getTransactions()).toEqual([{ date: "14-01-2023", credit: 1000, balance: 1000 }]);
         expect(account.getBalance()).toEqual(1000);
     });
+
+    it("adds a transaction for a withdrawal of 500 on 10-01-2023", () => {
+        const account = new Account();
+
+        const mockTransaction = {
+            withdrawal: () => {
+                return { date: "10-01-2023", debit: 500, balance: 300 };
+            },
+        };
+
+        account.addTransaction(mockTransaction.withdrawal());
+        expect(account.getTransactions()).toEqual([{ date: "10-01-2023", debit: 500, balance: 300 }]);
+        expect(account.getBalance()).toEqual(300);
+    });
 });

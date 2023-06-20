@@ -7,7 +7,7 @@ describe("Transaction", () => {
 
         const deposit = transaction.deposit(date, 1000, 0);
 
-        expect(deposit).toEqual({ date: "10-01-2023", credit: 1000, balance: 1000 });
+        expect(deposit).toEqual({ date: date, credit: 1000, balance: 1000 });
     });
 
     it("returns a withdrawal transaction", () => {
@@ -15,6 +15,6 @@ describe("Transaction", () => {
         const date = new Date("2023-01-10");
 
         const withdrawal = transaction.withdrawal(date, 500, 1000);
-        expect(withdrawal).toEqual({ date: "10-01-2023", debit: 500, balance: 500 });
+        expect(withdrawal).toEqual({ date: date, debit: 500, balance: 500 });
     });
 });
