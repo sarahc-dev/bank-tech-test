@@ -1,8 +1,12 @@
 class Transaction {
     deposit(date, amount, currentBalance) {
-        // const date = new Date("2023-01-10");
         const newBalance = currentBalance + amount;
         return { date: this.formatDate(date), credit: amount, balance: newBalance };
+    }
+
+    withdrawal(date, amount, currentBalance) {
+        const newBalance = currentBalance - amount;
+        return { date: this.formatDate(date), debit: amount, balance: newBalance };
     }
 
     formatDate(date) {

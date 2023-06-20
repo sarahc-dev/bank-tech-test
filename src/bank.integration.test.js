@@ -34,4 +34,16 @@ describe("bank integration", () => {
             { date: "13-01-2023", credit: 2000, balance: 3000 },
         ]);
     });
+
+    it("makes a withdrawal of 500 on 14-01-2023", () => {
+        const account = new Account();
+        const transaction = new Transaction();
+        const balance = 1000;
+        const date = new Date("2023-01-14");
+        const withdrawal = transaction.withdrawal(date, 500, balance);
+        account.addTransaction(withdrawal);
+
+        expect(account.getBalance()).toBe(500);
+        expect(account.getTransactions()).toEqual([{ date: "14-01-2023", debit: 500, balance: 500 }]);
+    });
 });

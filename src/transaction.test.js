@@ -9,4 +9,12 @@ describe("Transaction", () => {
 
         expect(deposit).toEqual({ date: "10-01-2023", credit: 1000, balance: 1000 });
     });
+
+    it("returns a withdrawal transaction", () => {
+        const transaction = new Transaction();
+        const date = new Date("2023-01-10");
+
+        const withdrawal = transaction.withdrawal(date, 500, 1000);
+        expect(withdrawal).toEqual({ date: "10-01-2023", debit: 500, balance: 500 });
+    });
 });
