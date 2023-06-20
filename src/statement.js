@@ -1,22 +1,28 @@
 class Statement {
     print(transactions) {
         if (!(transactions instanceof Array)) throw new Error("Transactions should be an array");
-        let statement = this.printHeader();
 
-        this.sortTransactionsDesc(transactions).forEach(transaction => {
-            const credit = transaction.credit ? ` ${transaction.credit.toFixed(2)} ` : " ";
-            const debit = transaction.debit ? ` ${transaction.debit.toFixed(2)} ` : " ";
-            const balance = transaction.balance.toFixed(2);
+        const sortedTransactions = this.sortTransactionsDesc(transactions);
 
-            const formattedTransaction = `${transaction.date.toLocaleDateString()} ||${credit}||${debit}|| ${balance}\n`;
-            statement = statement.concat(formattedTransaction);
-        });
-
-        return statement;
+        return this.printHeader() + this.printTransactions(sortedTransactions);
     }
 
     printHeader() {
         return "date || credit || debit || balance\n";
+    }
+
+    printTransactions(transactions) {
+        let statement = "";
+        transactions.forEach(transaction => {
+            const formattedTransaction = `${transaction.date.toLocaleDateString()} ||${this.formatCurrency(transaction.credit)}||${this.formatCurrency(transaction.debit)}|| ${transaction.balance.toFixed(2)}\n`;
+
+            statement = statement.concat(formattedTransaction);
+        });
+        return statement;
+    }
+
+    formatCurrency(amount) {
+        return amount ? ` ${amount.toFixed(2)} ` : " ";
     }
 
     sortTransactionsDesc(transactions) {

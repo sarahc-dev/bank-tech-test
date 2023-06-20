@@ -15,5 +15,8 @@ module.exports = {
         "linebreak-style": ["error", "unix"],
         quotes: ["error", "double"],
         semi: ["error", "always"],
+        "max-lines-per-function": ["warn", { max: 9, skipBlankLines: true }],
+        "max-lines": ["warn", { max: 50, skipBlankLines: true }],
+        // "max-len": ["warn"],
     },
 };

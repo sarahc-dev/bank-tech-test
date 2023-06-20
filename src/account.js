@@ -13,7 +13,9 @@ class Account {
     }
 
     addTransaction(transaction) {
-        if (typeof transaction !== "object") throw new Error("Transaction should be an object");
+        if (typeof transaction !== "object") {
+            throw new Error("Transaction should be an object");
+        }
 
         this.transactions.push(transaction);
         this.balance = transaction.balance;

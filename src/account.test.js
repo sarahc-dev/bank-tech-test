@@ -1,3 +1,5 @@
+/* eslint-disable max-lines-per-function, max-lines, max-len */
+
 const Account = require("./account.js");
 
 describe("Account", () => {
