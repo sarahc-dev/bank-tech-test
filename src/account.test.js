@@ -38,4 +38,10 @@ describe("Account", () => {
         expect(account.getTransactions()).toEqual([{ date: "10-01-2023", debit: 500, balance: 300 }]);
         expect(account.getBalance()).toEqual(300);
     });
+
+    it("returns an error if transaction does not have correct values", () => {
+        const account = new Account();
+
+        expect(() => account.addTransaction(500)).toThrow("Transaction should be an object");
+    });
 });

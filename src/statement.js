@@ -1,5 +1,6 @@
 class Statement {
     print(transactions) {
+        if (!(transactions instanceof Array)) throw new Error("Transactions should be an array");
         let statement = this.printHeader();
 
         this.sortTransactionsDesc(transactions).forEach(transaction => {

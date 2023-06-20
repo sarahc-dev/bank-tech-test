@@ -49,4 +49,21 @@ describe("Statement", () => {
             { date: new Date("2023-01-09"), credit: 500, balance: 500 },
         ]);
     });
+
+    it("prints a statement with no transactions", () => {
+        const statement = new Statement();
+
+        const mockTransactions = [];
+
+        const printedStatement = statement.print(mockTransactions);
+        expect(printedStatement).toEqual("date || credit || debit || balance\n");
+    });
+
+    it("returns an error if transactions is not an array", () => {
+        const statement = new Statement();
+
+        const mockTransactions = "credit 500";
+
+        expect(() => statement.print(mockTransactions)).toThrow("Transactions should be an array");
+    });
 });
