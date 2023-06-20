@@ -46,4 +46,32 @@ describe("bank integration", () => {
         expect(account.getBalance()).toBe(500);
         expect(account.getTransactions()).toEqual([{ date: "14-01-2023", debit: 500, balance: 500 }]);
     });
+
+    it("makes multiple deposit and withdrawal transactions", () => {
+        const account = new Account();
+        const transaction = new Transaction();
+
+        const balance1 = account.getBalance();
+        const date1 = new Date("2023-01-10");
+        const deposit1 = transaction.deposit(date1, 1000, balance1);
+        account.addTransaction(deposit1);
+
+        const balance2 = account.getBalance();
+        const date2 = new Date("2023-01-13");
+        const deposit2 = transaction.deposit(date2, 2000, balance2);
+        account.addTransaction(deposit2);
+
+        const balance3 = account.getBalance();
+        const date3 = new Date("2023-01-14");
+        const withdrawal1 = transaction.withdrawal(date3, 500, balance3);
+        account.addTransaction(withdrawal1);
+
+        expect(account.getBalance()).toBe(2500);
+        expect(account.getTransactions().length).toBe(3);
+        expect(account.getTransactions()).toEqual([
+            { date: "10-01-2023", credit: 1000, balance: 1000 },
+            { date: "13-01-2023", credit: 2000, balance: 3000 },
+            { date: "14-01-2023", debit: 500, balance: 2500 },
+        ]);
+    });
 });
