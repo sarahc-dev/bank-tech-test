@@ -65,6 +65,10 @@ During development, my class design and function names did change as I got a bet
 
 In the Statement class, I eventually chose not to initialise this with the transaction list but instead to add this as an argument to the print function. I'm not sure if there is a benefit to either way, but I thought for future scalability if for instance the transaction list was much longer and you only wanted to print a section of it, it would be better to make this an argument.
 
+I have handled some exceptions, where the type is incorrect or amount is less than 0. I considered handling an edge case where the withdrawal was larger than the balance - but chose not to because this was not in the acceptance criteria.
+
+I am wondering if I have overcomplicated the task, as there are a lot of steps involved in running the project to meet the acceptance criteria.
+
 ## Screenshots
 
 Running app:
