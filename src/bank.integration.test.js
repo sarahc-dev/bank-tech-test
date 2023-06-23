@@ -1,93 +1,46 @@
 /* eslint-disable max-lines-per-function, max-lines, max-len */
 
 const Account = require("./account.js");
-const Transaction = require("./transaction.js");
 const Statement = require("./statement.js");
 
 describe("bank integration", () => {
-    it("makes a deposit of 1000 on 10-01-2023", () => {
-        const account = new Account();
-        const balance = account.getBalance();
-        const date = new Date("2023-01-10");
-        const transaction = new Transaction();
-        const deposit = transaction.deposit(date, 1000, balance);
-
-        account.addTransaction(deposit);
-        expect(account.getTransactions()).toEqual([{ date: date, credit: 1000, balance: 1000 }]);
-    });
-
-    it("makes multiple deposit transactions", () => {
-        const account = new Account();
-        const transaction = new Transaction();
-
-        const balance = account.getBalance();
-        const date = new Date("2023-01-10");
-        const deposit = transaction.deposit(date, 1000, balance);
-        account.addTransaction(deposit);
-
-        const newBalance = account.getBalance();
-        const secondDate = new Date("2023-01-13");
-        const secondDeposit = transaction.deposit(secondDate, 2000, newBalance);
-        account.addTransaction(secondDeposit);
-
-        expect(account.getTransactions().length).toBe(2);
-        expect(account.getBalance()).toBe(3000);
-        expect(account.getTransactions()).toEqual([
-            { date: date, credit: 1000, balance: 1000 },
-            { date: secondDate, credit: 2000, balance: 3000 },
-        ]);
-    });
-
-    it("makes a withdrawal of 500 on 14-01-2023", () => {
-        const account = new Account();
-        const transaction = new Transaction();
-        const balance = 1000;
-        const date = new Date("2023-01-14");
-        const withdrawal = transaction.withdrawal(date, 500, balance);
-        account.addTransaction(withdrawal);
-
-        expect(account.getBalance()).toBe(500);
-        expect(account.getTransactions()).toEqual([{ date: date, debit: 500, balance: 500 }]);
-    });
-
-    it("makes multiple deposit and withdrawal transactions", () => {
-        const account = new Account();
-        const transaction = new Transaction();
-
-        const balance1 = account.getBalance();
-        const date1 = new Date("2023-01-10");
-        const deposit1 = transaction.deposit(date1, 1000, balance1);
-        account.addTransaction(deposit1);
-
-        const balance2 = account.getBalance();
-        const date2 = new Date("2023-01-13");
-        const deposit2 = transaction.deposit(date2, 2000, balance2);
-        account.addTransaction(deposit2);
-
-        const balance3 = account.getBalance();
-        const date3 = new Date("2023-01-14");
-        const withdrawal1 = transaction.withdrawal(date3, 500, balance3);
-        account.addTransaction(withdrawal1);
-
-        expect(account.getBalance()).toBe(2500);
-        expect(account.getTransactions().length).toBe(3);
-        expect(account.getTransactions()).toEqual([
-            { date: date1, credit: 1000, balance: 1000 },
-            { date: date2, credit: 2000, balance: 3000 },
-            { date: date3, debit: 500, balance: 2500 },
-        ]);
-    });
-
     it("prints a bank statement with one transaction", () => {
         const account = new Account();
-        const balance = account.getBalance();
-        const date = new Date("2023-01-10");
-        const transaction = new Transaction();
-        const deposit = transaction.deposit(date, 1000, balance);
-        account.addTransaction(deposit);
-
         const statement = new Statement();
-        const printStatement = statement.print(account.getTransactions());
-        expect(printStatement).toEqual("date || credit || debit || balance\n10/01/2023 || 1000.00 || || 1000.00\n");
+
+        account.deposit(1000, new Date("2023-01-10"));
+
+        const printedStatement = statement.print(account.transactions);
+
+        expect(printedStatement).toEqual("date || credit || debit || balance\n10/01/2023 || 1000.00 || || 1000.00");
+    });
+
+    it("prints a bank statement with multiple transactions", () => {
+        const account = new Account();
+        const statement = new Statement();
+
+        account.deposit(1000, new Date("2023-01-10"));
+        account.deposit(2000, new Date("2023-01-13"));
+        account.withdraw(500, new Date("2023-01-14"));
+
+        const printedStatement = statement.print(account.transactions);
+
+        expect(printedStatement).toEqual("date || credit || debit || balance\n14/01/2023 || || 500.00 || 2500.00\n13/01/2023 || 2000.00 || || 3000.00\n10/01/2023 || 1000.00 || || 1000.00");
+    });
+
+    it("prints a bank statement with multiple transactions not in order", () => {
+        const account = new Account();
+        const statement = new Statement();
+
+        account.deposit(1000, new Date("2023-01-10"));
+        account.deposit(2000, new Date("2023-01-13"));
+        account.withdraw(500, new Date("2023-01-14"));
+        account.withdraw(1700, new Date("2023-01-11"));
+        account.deposit(500, new Date("2023-01-01"));
+        account.withdraw(1000, new Date("2023-03-03"));
+
+        const printedStatement = statement.print(account.transactions);
+
+        expect(printedStatement).toEqual("date || credit || debit || balance\n03/03/2023 || || 1000.00 || 300.00\n14/01/2023 || || 500.00 || 1300.00\n13/01/2023 || 2000.00 || || 1800.00\n11/01/2023 || || 1700.00 || -200.00\n10/01/2023 || 1000.00 || || 1500.00\n01/01/2023 || 500.00 || || 500.00");
     });
 });

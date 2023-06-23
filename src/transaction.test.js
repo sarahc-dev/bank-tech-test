@@ -17,18 +17,13 @@ describe("Transaction", () => {
         expect(transaction.type).toEqual("credit");
     });
 
-    it("returns the default transaction date", () => {
+    it("returns the transaction date", () => {
         const mockedDate = new Date("2023-01-10");
         jest.useFakeTimers("modern");
         jest.setSystemTime(mockedDate);
 
         const transaction = new Transaction(1000, "credit");
         expect(transaction.date.toLocaleDateString()).toEqual("10/01/2023");
-    });
-
-    it("returns a user inputted transaction date", () => {
-        const transaction = new Transaction(1000, "credit", new Date("2023-01-13"));
-        expect(transaction.date.toLocaleDateString()).toEqual("13/01/2023");
     });
 
     it("returns an error if amount is not a number", () => {
@@ -47,7 +42,12 @@ describe("Transaction", () => {
         expect(() => new Transaction(1000, "debi")).toThrow("Type must be credit or debit");
     });
 
-    it("returns an error if date is not a date object", () => {
-        expect(() => new Transaction(1000, "debit", "10-01-2023")).toThrow("Date must be a Date object");
+    it("returns a manually inputted date", () => {
+        const transaction = new Transaction(1000, "credit", new Date("2023-01-10"));
+        expect(transaction.date.toLocaleDateString()).toEqual("10/01/2023");
+    });
+
+    it("returns an error if manually inputted date is not a JS date object", () => {
+        expect(() => new Transaction(1000, "debit", "01/01/20203")).toThrow("Date must be a JS Date object");
     });
 });

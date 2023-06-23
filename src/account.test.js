@@ -3,47 +3,70 @@
 const Account = require("./account.js");
 
 describe("Account", () => {
-    it("initialises with a balance of 0", () => {
-        const account = new Account();
-        expect(account.getBalance()).toEqual(0);
+    beforeEach(() => {
+        const mockedDate = new Date("2023-01-10");
+        jest.useFakeTimers("modern");
+        jest.setSystemTime(mockedDate);
+    });
+
+    afterEach(() => {
+        jest.useRealTimers();
     });
 
     it("initialises with an empty transaction array", () => {
         const account = new Account();
-        expect(account.getTransactions()).toEqual([]);
+        expect(account.transactions).toEqual([]);
     });
 
-    it("adds a transaction for a deposit of 1000 on 14-01-2023", () => {
+    it("adds a deposit of 1000", () => {
         const account = new Account();
-
-        const mockTransaction = {
-            deposit: () => {
-                return { date: "14-01-2023", credit: 1000, balance: 1000 };
-            },
-        };
-
-        account.addTransaction(mockTransaction.deposit());
-        expect(account.getTransactions()).toEqual([{ date: "14-01-2023", credit: 1000, balance: 1000 }]);
-        expect(account.getBalance()).toEqual(1000);
+        account.deposit(1000);
+        expect(account.transactions.length).toBe(1);
+        expect(account.transactions).toEqual([{ amount: 1000, type: "credit", date: new Date("2023-01-10"), balance: 1000 }]);
     });
 
-    it("adds a transaction for a withdrawal of 500 on 10-01-2023", () => {
+    it("adds a withdrawal of 500", () => {
         const account = new Account();
-
-        const mockTransaction = {
-            withdrawal: () => {
-                return { date: "10-01-2023", debit: 500, balance: 300 };
-            },
-        };
-
-        account.addTransaction(mockTransaction.withdrawal());
-        expect(account.getTransactions()).toEqual([{ date: "10-01-2023", debit: 500, balance: 300 }]);
-        expect(account.getBalance()).toEqual(300);
+        account.withdraw(500);
+        expect(account.transactions.length).toBe(1);
+        expect(account.transactions).toEqual([{ amount: 500, type: "debit", date: new Date("2023-01-10"), balance: -500 }]);
     });
 
-    it("returns an error if transaction does not have correct values", () => {
+    it("adds multiple transactions", () => {
         const account = new Account();
+        account.deposit(1000);
+        account.deposit(2000);
+        account.withdraw(500);
+        expect(account.transactions.length).toBe(3);
+        expect(account.transactions).toEqual([
+            { amount: 1000, type: "credit", date: new Date("2023-01-10"), balance: 1000 },
+            { amount: 2000, type: "credit", date: new Date("2023-01-10"), balance: 3000 },
+            { amount: 500, type: "debit", date: new Date("2023-01-10"), balance: 2500 },
+        ]);
+    });
 
-        expect(() => account.addTransaction(500)).toThrow("Transaction should be an object");
+    it("returns an error if amount is 0", () => {
+        const account = new Account();
+        expect(() => account.deposit(0)).toThrow("Amount must be a number greater than 0");
+    });
+
+    it("returns an error if amount is not a number", () => {
+        const account = new Account();
+        expect(() => account.withdraw("1000")).toThrow("Amount must be a number greater than 0");
+    });
+
+    it("calculates the correct balances if transactions not added in order", () => {
+        const account = new Account();
+        account.deposit(1000);
+        account.deposit(2000);
+        account.withdraw(500, new Date("2023-03-03"));
+        account.deposit(1000, new Date("2023-01-03"));
+        expect(account.transactions.length).toBe(4);
+        expect(account.transactions).toEqual([
+            { amount: 1000, type: "credit", date: new Date("2023-01-03"), balance: 1000 },
+            { amount: 1000, type: "credit", date: new Date("2023-01-10"), balance: 2000 },
+            { amount: 2000, type: "credit", date: new Date("2023-01-10"), balance: 4000 },
+            { amount: 500, type: "debit", date: new Date("2023-03-03"), balance: 3500 },
+        ]);
     });
 });
