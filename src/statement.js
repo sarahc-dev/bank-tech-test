@@ -1,8 +1,12 @@
 class Statement {
-    print(transactions) {
-        if (!(transactions instanceof Array)) throw new Error("Transactions should be an array of transactions");
+    constructor(account) {
+        this.transactions = account.transactions;
+    }
 
-        return this.#printHeader() + this.#printTransactions(transactions).join("\n");
+    print() {
+        if (!(this.transactions instanceof Array)) throw new Error("Transactions should be an array of transactions");
+
+        return this.#printHeader() + this.#printTransactions(this.transactions).join("\n");
     }
 
     #printHeader() {
