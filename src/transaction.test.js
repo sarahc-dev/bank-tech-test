@@ -3,55 +3,51 @@
 const Transaction = require("./transaction");
 
 describe("Transaction", () => {
-    it("returns a deposit transaction", () => {
-        const transaction = new Transaction();
-        const date = new Date("2023-01-10");
-
-        const deposit = transaction.deposit(date, 1000, 0);
-
-        expect(deposit).toEqual({ date: date, credit: 1000, balance: 1000 });
+    afterEach(() => {
+        jest.useRealTimers();
     });
 
-    it("returns a withdrawal transaction", () => {
-        const transaction = new Transaction();
-        const date = new Date("2023-01-10");
-
-        const withdrawal = transaction.withdrawal(date, 500, 1000);
-        expect(withdrawal).toEqual({ date: date, debit: 500, balance: 500 });
+    it("returns a transaction amount", () => {
+        const transaction = new Transaction(1000, "credit");
+        expect(transaction.amount).toEqual(1000);
     });
 
-    it("deposit returns an error if date is not a Date object", () => {
-        const transaction = new Transaction();
-        const date = "2023-01-10";
-
-        expect(() => transaction.deposit(date, 1000, 0)).toThrow("Date is not an instance of Date object");
+    it("returns a transaction type", () => {
+        const transaction = new Transaction(1000, "credit");
+        expect(transaction.type).toEqual("credit");
     });
 
-    it("returns an error if date is not a Date object", () => {
-        const transaction = new Transaction();
-        const date = "2023-01-10";
+    it("returns the default transaction date", () => {
+        const mockedDate = new Date("2023-01-10");
+        jest.useFakeTimers("modern");
+        jest.setSystemTime(mockedDate);
 
-        expect(() => transaction.withdrawal(date, 1000, 1000)).toThrow("Date is not an instance of Date object");
+        const transaction = new Transaction(1000, "credit");
+        expect(transaction.date.toLocaleDateString()).toEqual("10/01/2023");
     });
 
-    it("returns an error is amount is not greater than 0", () => {
-        const transaction = new Transaction();
-        const date = new Date("2023-01-10");
-
-        expect(() => transaction.deposit(date, 0, 1000)).toThrow("Amount must be greater than 0");
+    it("returns a user inputted transaction date", () => {
+        const transaction = new Transaction(1000, "credit", new Date("2023-01-13"));
+        expect(transaction.date.toLocaleDateString()).toEqual("13/01/2023");
     });
 
     it("returns an error if amount is not a number", () => {
-        const transaction = new Transaction();
-        const date = new Date("2023-01-10");
-
-        expect(() => transaction.deposit(date, "100", 1000)).toThrow("Amount must be a number");
+        expect(() => new Transaction("1000", "credit")).toThrow("Amount must be a number greater than 0");
     });
 
-    it("returns an error if currentBalance is not a number", () => {
-        const transaction = new Transaction();
-        const date = new Date("2023-01-10");
+    it("returns an error if amount is 0", () => {
+        expect(() => new Transaction(0, "credit")).toThrow("Amount must be a number greater than 0");
+    });
 
-        expect(() => transaction.deposit(date, 1000, "1000")).toThrow("Current balance must be a number");
+    it("returns an error if amount is negative", () => {
+        expect(() => new Transaction(-1000, "debit")).toThrow("Amount must be a number greater than 0");
+    });
+
+    it("returns an error if type is not credit or debit", () => {
+        expect(() => new Transaction(1000, "debi")).toThrow("Type must be credit or debit");
+    });
+
+    it("returns an error if date is not a date object", () => {
+        expect(() => new Transaction(1000, "debit", "10-01-2023")).toThrow("Date must be a Date object");
     });
 });
